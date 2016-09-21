@@ -15,8 +15,6 @@ var _process2 = _interopRequireDefault(_process);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// eslint-disable-line
-
 var _process$env$NODE_ENV = _process2.default.env.NODE_ENV;
 var NODE_ENV = _process$env$NODE_ENV === undefined ? 'production' : _process$env$NODE_ENV;
 
@@ -44,7 +42,7 @@ switch (NODE_ENV) {
     level = 'warn';
 }
 
-var logger = exports.logger = new _winston2.default.Logger({ //eslint-disable-line
+var logger = exports.logger = new _winston2.default.Logger({ // eslint-disable-line
   level: level,
   transports: transports
 });

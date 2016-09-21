@@ -29,3 +29,7 @@ tmp
 
 # Users Environment Variables
 .lock-wscript
+
+# project sensitive files
+src/keys.js
+dist/keys.js

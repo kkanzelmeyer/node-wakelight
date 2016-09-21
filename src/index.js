@@ -1,3 +1,6 @@
+import firebase from 'firebase';
+import { logger } from './config';
+import * as keys from './keys';
 // import five from 'johnny-five';
 // import chipio from 'chip-io';
 import WakeLight from './wakeLight';
@@ -12,6 +15,25 @@ import WakeLight from './wakeLight';
 //
 //   // Blink every half second
 // });
+//
+logger.debug('initializing firebase app');
+firebase.initializeApp(keys.config);
 
-const wakeLight = new WakeLight(); // eslint-disable-line
-// wakeLight.run();
+const alarmsRef = firebase.database().ref('/alarms');
+
+// add auth
+firebase.auth().signInWithEmailAndPassword(
+  keys.email, keys.password)
+.then((user) => {
+  logger.debug(`${user.email} signed in`);
+  // init wakelight
+  const lillianWakeLight = new WakeLight();
+  // add value listener
+  alarmsRef.on('value', (data) => {
+    logger.debug('ref updated!');
+    lillianWakeLight.updateAlarms(data.val().lillian);
+  });
+})
+.catch((error) => {
+  logger.error(error.code, error.message);
+});

@@ -1,5 +1,5 @@
 import winston from 'winston';
-import process from 'process';
+import process from 'process'; // eslint-disable-line
 
 const {
   NODE_ENV = 'production',
@@ -28,7 +28,7 @@ switch (NODE_ENV) {
     level = 'warn';
 }
 
-export const logger = new (winston.Logger)({ // eslint-disable-line
+export const logger = new (winston.Logger)({ //eslint-disable-line
   level,
   transports,
 });

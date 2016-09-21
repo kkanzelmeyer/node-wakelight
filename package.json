@@ -6,7 +6,7 @@
   "scripts": {
     "postinstall": "npm run build",
     "start": "node dist/index.js",
-    "build": "babel src -d dist --copy-files",
+    "build": "babel src -d dist --copy-files --ignore src/keys.js",
     "lint": "eslint src",
     "dev": "nodemon src/index.js --exec babel-node"
   },
@@ -39,9 +39,7 @@
     "json-loader": "^0.5.3",
     "mocha": "^2.3.4",
     "sinon": "^1.17.2",
-    "sinon-chai": "^2.8.0",
-    "webpack": "^1.12.9",
-    "webpack-stream": "^3.1.0"
+    "sinon-chai": "^2.8.0"
   },
   "babelBoilerplateOptions": {
     "entryFileName": "index.js",
@@ -53,8 +51,5 @@
     "moment": "^2.15.0",
     "nodemon": "^1.10.2",
     "winston": "^2.2.0"
-  },
-  "eslintConfig": {
-    "extends": "google"
   }
 }
