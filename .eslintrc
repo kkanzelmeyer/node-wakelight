@@ -4,7 +4,10 @@
     "sourceType": "module"
   },
   "extends": "airbnb/base",
-  "rules": {},
+  "rules": {
+    "arrow-parens": 0,
+    "import/no-extraneous-dependencies": 0
+    },
   "env": {
     "browser": true,
     "node": true

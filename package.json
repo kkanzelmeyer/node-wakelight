@@ -10,7 +10,7 @@
     "build": "babel src -d dist --copy-files",
     "lint": "eslint src",
     "dev": "nodemon src/index.js --exec babel-node",
-    "test": "node_modules/mocha/bin/mocha test/*"
+    "test": "ava"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,8 @@
   },
   "homepage": "https://github.com/kkanzelmeyer/WakeLight",
   "devDependencies": {
+    "ava": "^0.16.0",
+    "babel-cli": "^6.14.0",
     "babel-core": "^6.3.26",
     "babel-loader": "^6.2.0",
     "babel-polyfill": "^6.3.14",
@@ -36,25 +38,37 @@
     "eslint-plugin-import": "^1.15.0",
     "eslint-plugin-jsx-a11y": "^2.2.2",
     "eslint-plugin-react": "^6.3.0",
+    "firebase": "^3.4.0",
     "glob": "^7.0.3",
     "isparta": "^4.0.0",
     "json-loader": "^0.5.3",
     "mocha": "^3.0.2",
-    "sinon": "^1.17.2",
-    "sinon-chai": "^2.8.0",
-    "webpack": "^2.1.0-beta.25"
-  },
-  "babelBoilerplateOptions": {
-    "entryFileName": "index.js",
-    "mainVarName": "wakelight"
-  },
-  "dependencies": {
-    "babel-cli": "^6.14.0",
-    "chip-io": "^2.0.1",
-    "firebase": "^3.4.0",
-    "johnny-five": "^0.10.0",
     "moment": "^2.15.0",
     "nodemon": "^1.10.2",
+    "sinon": "^1.17.2",
+    "sinon-chai": "^2.8.0",
+    "webpack": "^2.1.0-beta.25",
     "winston": "^2.2.0"
+  },
+  "dependencies": {
+    "chip-io": "^2.0.1",
+    "johnny-five": "^0.10.0"
+  },
+  "ava": {
+    "files": [
+      "test/unit/*"
+    ],
+    "source": [
+      "**/*.{js,jsx}",
+      "!dist/**/*"
+    ],
+    "concurrency": 5,
+    "failFast": true,
+    "tap": true,
+    "powerAssert": false,
+    "require": [
+      "babel-register"
+    ],
+    "babel": "inherit"
   }
 }

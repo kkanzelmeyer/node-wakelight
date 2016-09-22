@@ -3,10 +3,12 @@ import { logger } from './config';
 
 class WakeLight {
 
-  constructor() {
-    logger.debug('constructor');
-  }
-
+  /**
+   * adds a Johnny Five led to the wakelight
+   * @method addLED
+   * @param [Object] led  a Johnny Five LED
+   * @see http://johnny-five.io/examples/led/
+   */
   addLED(led) {
     logger.debug('adding led');
     this.led = led;
@@ -18,15 +20,20 @@ class WakeLight {
     }, 5000);
   }
 
-  updateAlarms(alarms) {
+  /**
+   * add or update wakelight alarms. calling this method
+   * will restart the alarms timer and immediately check
+   * if the alarms should be active
+   * @param {Object}  An object where each key contains an alarm
+   */
+  addAlarms(alarms) {
     logger.debug('updating alarms');
-    logger.debug(alarms);
     this.alarms = alarms;
-    // restart the timer
-    this.stop();
-    this.run();
   }
 
+  /**
+   * Enable the alarm
+   */
   enableAlarm() {
     logger.debug('Alarm enabled!');
     this.alarmActive = true;
@@ -35,6 +42,9 @@ class WakeLight {
     }
   }
 
+  /**
+   * Disable the alarm
+   */
   disableAlarm() {
     logger.debug('Alarm disabled!');
     this.alarmActive = false;
@@ -43,20 +53,20 @@ class WakeLight {
     }
   }
 
-  run() {
-    logger.debug('running wake light');
-    if (!this.alarms) {
-      logger.error('alarms not set');
-      return;
-    }
-
-    const checkAlarm = (alarm) => {
+  /**
+   * Check an array of alarms to see if any of them are alarmActive
+   * @param [Array] alarms an array of alarm objects
+   */
+  checkAlarms(time) {
+    const alarms = Object.values(this.alarms);
+    logger.debug(alarms);
+    alarms.forEach(alarm => {
       const { hour: alarmHour,
         minute: alarmMinute,
         duration: alarmDuration } = alarm;
 
       // get current time reference
-      const now = moment();
+      const now = time || moment();
 
       // create time reference for the alarm enable
       const alarmEnable = moment()
@@ -70,20 +80,25 @@ class WakeLight {
         .add(alarmDuration, 'minutes');
 
       if (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) {
-        return true;
+        this.enableAlarm();
+      } else {
+        this.disableAlarm();
       }
-      return false;
-    };
+    });
+  }
 
-    const { morning, afternoon } = this.alarms;
+  run() {
+    logger.silly('running wake light');
+    if (!this.alarms) {
+      logger.error('alarms not set');
+      return;
+    }
+    this.checkAlarms();
+
+    // set an interval to check the time and see if the alarm should be activated
     this.timer = setInterval(() => {
       // get current time reference
-      const now = moment();
-      if (checkAlarm(morning) || checkAlarm(afternoon)) {
-        this.enableAlarm(now);
-      } else {
-        this.disableAlarm(now);
-      }
+      this.checkAlarms();
     }, 60000);
   }
 

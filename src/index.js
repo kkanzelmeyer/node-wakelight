@@ -1,9 +1,11 @@
 import firebase from 'firebase';
+/* eslint-disable import/no-unresolved */
 import five from 'johnny-five';
 import chipio from 'chip-io';
-import { logger, NODE_ENV } from './config';
+/* eslint-enable */
+import { logger } from './config';
 import * as keys from './keys';
-import WakeLight from './wakeLight';
+import WakeLight from './wakelight';
 
 logger.debug('initializing firebase app');
 firebase.initializeApp(keys.config);
@@ -18,14 +20,6 @@ firebase.auth().signInWithEmailAndPassword(
 
   // init wakelight
   const lillianWakeLight = new WakeLight();
-
-  // add value listener
-  alarmsRef.on('value', (data) => {
-    logger.debug('ref updated!');
-    lillianWakeLight.updateAlarms(data.val().lillian);
-  });
-
-  // init chip board
   const board = new five.Board({
     io: new chipio() // eslint-disable-line
   });
@@ -33,6 +27,12 @@ firebase.auth().signInWithEmailAndPassword(
     // Create an LED on the XIO-P0 pin
     const led = new five.Led('XIO-P0');
     lillianWakeLight.addLED(led);
+  });
+
+  // add value listener
+  alarmsRef.on('value', (data) => {
+    logger.debug('ref updated!');
+    lillianWakeLight.addAlarms(data.val().lillian);
   });
 })
 .catch((error) => {
