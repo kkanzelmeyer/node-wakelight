@@ -10,6 +10,12 @@ class WakeLight {
   addLED(led) {
     logger.debug('adding led');
     this.led = led;
+    // Blink every half second
+    led.blink(500);
+    setTimeout(() => {
+      led.stop();
+      led.off();
+    }, 5000);
   }
 
   updateAlarms(alarms) {
@@ -24,11 +30,17 @@ class WakeLight {
   enableAlarm() {
     logger.debug('Alarm enabled!');
     this.alarmActive = true;
+    if (this.led) {
+      this.led.on();
+    }
   }
 
   disableAlarm() {
     logger.debug('Alarm disabled!');
     this.alarmActive = false;
+    if (this.led) {
+      this.led.off();
+    }
   }
 
   run() {
