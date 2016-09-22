@@ -34,8 +34,10 @@ firebase.auth().signInWithEmailAndPassword(
     const led = new five.Led('XIO-P0');
     lillianWakeLight.addLED(led);
     // Blink every half second
+    led.blink(500);
     setTimeout(() => {
-      led.blink(500);
+      led.stop();
+      led.off();
     }, 3000);
   });
 })

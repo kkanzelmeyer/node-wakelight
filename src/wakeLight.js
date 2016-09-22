@@ -76,6 +76,7 @@ class WakeLight {
   }
 
   stop() {
+    this.disableAlarm();
     clearTimeout(this.timer);
   }
 }
