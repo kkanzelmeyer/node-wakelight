@@ -26,10 +26,10 @@ node_modules
 bower_components
 coverage
 tmp
+dist
 
 # Users Environment Variables
 .lock-wscript
 
 # project sensitive files
 src/keys.js
-dist/keys.js

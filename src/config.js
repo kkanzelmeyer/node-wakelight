@@ -1,7 +1,7 @@
 import winston from 'winston';
 import process from 'process'; // eslint-disable-line
 
-const {
+export const {
   NODE_ENV = 'production',
 } = process.env;
 
