@@ -1,7 +1,7 @@
 import firebase from 'firebase';
-// import five from 'johnny-five';
-// import chipio from 'chip-io';
-import { logger } from './config';
+import five from 'johnny-five';
+import chipio from 'chip-io';
+import { logger, NODE_ENV } from './config';
 import * as keys from './keys';
 import WakeLight from './wakeLight';
 
@@ -26,17 +26,18 @@ firebase.auth().signInWithEmailAndPassword(
   });
 
   // init chip board
-  // if (NODE_ENV === 'production') {
-  //   const board = new five.Board({
-  //     io: new chipio() // eslint-disable-line
-  //   });
-  //   board.on('ready', () => {
-  //     // Create an LED on the XIO-P0 pin
-  //     const led = new five.Led('XIO-P0');
-  //     lillianWakeLight.addLED(led);
-  //     // Blink every half second
-  //   });
-  // }
+  const board = new five.Board({
+    io: new chipio() // eslint-disable-line
+  });
+  board.on('ready', () => {
+    // Create an LED on the XIO-P0 pin
+    const led = new five.Led('XIO-P0');
+    lillianWakeLight.addLED(led);
+    // Blink every half second
+    setTimeout(() => {
+      led.blink(500);
+    }, 3000);
+  });
 })
 .catch((error) => {
   logger.error(error.code, error.message);
