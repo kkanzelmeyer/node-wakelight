@@ -26,8 +26,10 @@ firebase.auth().signInWithEmailAndPassword(
   keys.email, keys.password)
 .then((user) => {
   logger.debug(`${user.email} signed in`);
+
   // init wakelight
   const lillianWakeLight = new WakeLight();
+
   // add value listener
   alarmsRef.on('value', (data) => {
     logger.debug('ref updated!');

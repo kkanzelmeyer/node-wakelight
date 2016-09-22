@@ -1,16 +1,18 @@
-import WakeLight from '../../src/WakeLight';
+import moment from 'moment';
+import { logger } from '../../src/config';
 
-describe('wakelight', () => {
-  let wakeLight = null;
-  describe('Constructor', () => {
+describe('moment', () => {
+  describe('time check', () => {
+    let now;
     beforeEach(() => {
-      wakeLight = new WakeLight();
+      now = moment();
+      logger.debug(`Now: ${now.format('dddd, hh:mmA')}`);
     });
 
-    it('should update the alarms', () => {
-      wakeLight.setAlarms(alarms);
-      expect(wakeLight.alarms).to.equal(alarms);
+    it('now should be after the alarm time', () => {
+      const alarm = now.add(30, 'minutes');
+      logger.debug(`Alarm: ${alarm.format('dddd, hh:mmA')}`);
+      expect(now.isBefore(alarm)).to.equal(true);
     });
-
   });
 });

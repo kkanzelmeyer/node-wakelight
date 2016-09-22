@@ -4,11 +4,13 @@
   "description": "A simple wake up light built with Chip and Johnny Five",
   "main": "dist/index.js",
   "scripts": {
+    "clean": "rm -rf dist",
     "postinstall": "npm run build",
     "start": "node dist/index.js",
     "build": "babel src -d dist --copy-files --ignore src/keys.js",
     "lint": "eslint src",
-    "dev": "nodemon src/index.js --exec babel-node"
+    "dev": "nodemon src/index.js --exec babel-node",
+    "test": "node_modules/mocha/bin/mocha test/*"
   },
   "repository": {
     "type": "git",
@@ -37,9 +39,10 @@
     "glob": "^7.0.3",
     "isparta": "^4.0.0",
     "json-loader": "^0.5.3",
-    "mocha": "^2.3.4",
+    "mocha": "^3.0.2",
     "sinon": "^1.17.2",
-    "sinon-chai": "^2.8.0"
+    "sinon-chai": "^2.8.0",
+    "webpack": "^2.1.0-beta.25"
   },
   "babelBoilerplateOptions": {
     "entryFileName": "index.js",

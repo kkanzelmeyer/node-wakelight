@@ -60,19 +60,25 @@ var WakeLight = function () {
       if (!this.alarms) {
         throw Error('alarms not set');
       }
-      var now = (0, _moment2.default)();
-      _config.logger.debug('' + now.format('dddd, hh:mmA'));
 
       var checkAlarm = function checkAlarm(alarm) {
         var alarmHour = alarm.hour;
         var alarmMinute = alarm.minute;
         var alarmDuration = alarm.duration;
+        // get current time reference
 
+        var now = (0, _moment2.default)();
+        _config.logger.debug('=======================================');
+        _config.logger.debug('Now: ' + now.format('dddd, hh:mmA'));
 
         var alarmEnable = (0, _moment2.default)().hour(alarmHour).minute(alarmMinute);
+        _config.logger.debug('Alarm enable: ' + alarmEnable.format('ddd, hh:mmA'));
         var alarmDisable = alarmEnable.add(alarmDuration, 'minutes');
-        _config.logger.debug(alarmEnable.format('ddd, hhmmA') + ' is after ' + now.isAfter(alarmEnable));
-        _config.logger.debug(alarmDisable.format('ddd, hhmmA') + ' is before ' + now.isBefore(alarmDisable));
+        _config.logger.debug('Alarm disable: ' + alarmDisable.format('ddd, hh:mmA'));
+
+        _config.logger.debug('Now is after alarm enable?: ' + now.isAfter(alarmEnable));
+        _config.logger.debug('Now is before alarm disable?: ' + now.isBefore(alarmDisable));
+        _config.logger.debug('=======================================');
 
         if (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) {
           return true;
@@ -85,6 +91,8 @@ var WakeLight = function () {
       var afternoon = _alarms.afternoon;
 
       this.timer = setInterval(function () {
+        // get current time reference
+        var now = (0, _moment2.default)();
         if (checkAlarm(morning) || checkAlarm(afternoon)) {
           _this.enableAlarm(now);
         } else {

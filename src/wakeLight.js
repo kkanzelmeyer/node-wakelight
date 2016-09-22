@@ -21,33 +21,41 @@ class WakeLight {
     this.run();
   }
 
-  enableAlarm(time) {
-    logger.debug(`Alarm enabled! ${time.format('ddd, hhmmA')}`);
+  enableAlarm() {
+    logger.debug('Alarm enabled!');
     this.alarmActive = true;
   }
 
-  disableAlarm(time) {
-    logger.debug(`Alarm disabled! ${time.format('ddd, hhmmA')}`);
+  disableAlarm() {
+    logger.debug('Alarm disabled!');
     this.alarmActive = false;
   }
 
   run() {
     logger.debug('running wake light');
     if (!this.alarms) {
-      throw Error('alarms not set');
+      logger.error('alarms not set');
+      return;
     }
-    const now = moment();
-    logger.debug(`${now.format('dddd, hh:mmA')}`);
 
     const checkAlarm = (alarm) => {
       const { hour: alarmHour,
         minute: alarmMinute,
         duration: alarmDuration } = alarm;
 
-      const alarmEnable = moment().hour(alarmHour).minute(alarmMinute);
-      const alarmDisable = alarmEnable.add(alarmDuration, 'minutes');
-      logger.debug(`${alarmEnable.format('ddd, hhmmA')} is after ${now.isAfter(alarmEnable)}`);
-      logger.debug(`${alarmDisable.format('ddd, hhmmA')} is before ${now.isBefore(alarmDisable)}`);
+      // get current time reference
+      const now = moment();
+
+      // create time reference for the alarm enable
+      const alarmEnable = moment()
+        .hour(alarmHour)
+        .minute(alarmMinute);
+
+      // create time reference for the alarm disable
+      const alarmDisable = moment()
+        .hour(alarmHour)
+        .minute(alarmMinute)
+        .add(alarmDuration, 'minutes');
 
       if (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) {
         return true;
@@ -57,12 +65,14 @@ class WakeLight {
 
     const { morning, afternoon } = this.alarms;
     this.timer = setInterval(() => {
+      // get current time reference
+      const now = moment();
       if (checkAlarm(morning) || checkAlarm(afternoon)) {
         this.enableAlarm(now);
       } else {
         this.disableAlarm(now);
       }
-    }, 10000);
+    }, 60000);
   }
 
   stop() {
