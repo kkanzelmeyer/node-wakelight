@@ -12,11 +12,6 @@ class WakeLight {
   addLED(led) {
     logger.debug('adding led');
     this.led = led;
-    // Blink every half second
-    this.led.on();
-    setTimeout(() => {
-      this.led.off();
-    }, 5000);
   }
 
   /**
