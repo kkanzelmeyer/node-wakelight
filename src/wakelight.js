@@ -111,7 +111,7 @@ class WakeLight {
 
   restart() {
     this.stop();
-    this.start();
+    this.run();
   }
 }
 
