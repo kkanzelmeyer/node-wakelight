@@ -108,6 +108,11 @@ class WakeLight {
     this.disableAlarm();
     clearTimeout(this.timer);
   }
+
+  restart() {
+    this.stop();
+    this.start();
+  }
 }
 
 export default WakeLight;

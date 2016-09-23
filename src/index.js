@@ -33,7 +33,7 @@ firebase.auth().signInWithEmailAndPassword(
   alarmsRef.on('value', (data) => {
     logger.debug('ref updated!');
     lillianWakeLight.addAlarms(data.val().lillian);
-    lillianWakeLight.run();
+    lillianWakeLight.restart();
   });
 })
 .catch((error) => {

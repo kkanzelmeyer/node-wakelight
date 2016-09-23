@@ -25,7 +25,7 @@ switch (NODE_ENV) {
     break;
   default:
     transports = [fileTransport];
-    level = 'warn';
+    level = 'debug';
 }
 
 export const logger = new (winston.Logger)({ //eslint-disable-line
