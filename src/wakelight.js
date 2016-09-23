@@ -58,9 +58,11 @@ class WakeLight {
    * @param [Array] alarms an array of alarm objects
    */
   checkAlarms(time) {
-    const alarms = Object.values(this.alarms);
-    logger.debug(alarms);
-    alarms.forEach(alarm => {
+    if (!this.alarms) {
+      throw Error('alarms not set =/');
+    }
+    Object.keys(this.alarms).forEach(key => {
+      const alarm = this.alarms[key];
       const { hour: alarmHour,
         minute: alarmMinute,
         duration: alarmDuration } = alarm;

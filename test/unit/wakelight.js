@@ -34,11 +34,20 @@ test('disable alarm', t => {
   t.false(wakelight.alarmActive, 'alarm should be inactive');
 });
 
-test('check alarm active', t => {
+test('check alarm inactive', t => {
   const testTime = moment()
     .hour(alarms.morning.hour)
     .minute(alarms.morning.minute)
     .subtract(5, 'minutes');
   wakelight.checkAlarms(testTime);
   t.false(wakelight.alarmActive, 'alarm should be inactive');
+});
+
+test('check alarm active', t => {
+  const testTime = moment()
+    .hour(alarms.morning.hour)
+    .minute(alarms.morning.minute)
+    .add(5, 'minutes');
+  wakelight.checkAlarms(testTime);
+  t.true(wakelight.alarmActive, 'alarm should be active');
 });
