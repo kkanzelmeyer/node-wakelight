@@ -36,6 +36,7 @@ class WakeLight {
   enableAlarm() {
     logger.debug('Alarm enabled!');
     this.alarmActive = true;
+    logger.debug(`LED? ${this.led}`);
     if (this.led) {
       this.led.on();
     }
@@ -47,6 +48,7 @@ class WakeLight {
   disableAlarm() {
     logger.debug('Alarm disabled!');
     this.alarmActive = false;
+    logger.debug(`LED? ${this.led}`);
     if (this.led) {
       this.led.off();
     }

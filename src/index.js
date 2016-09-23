@@ -33,9 +33,6 @@ board.on('ready', () => {
 
     // Create an LED on the XIO-P0 pin
     const led = new five.Led('XIO-P0');
-    this.repl.inject({
-      led,
-    });
     lillianWakeLight.addLED(led);
   })
   .catch((error) => {
