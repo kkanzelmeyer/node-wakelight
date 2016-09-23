@@ -12,30 +12,33 @@ firebase.initializeApp(keys.config);
 
 const alarmsRef = firebase.database().ref('/alarms');
 
-// add auth
-firebase.auth().signInWithEmailAndPassword(
-  keys.email, keys.password)
-.then((user) => {
-  logger.debug(`${user.email} signed in`);
+// init wakelight
+const lillianWakeLight = new WakeLight();
+const board = new five.Board({
+  io: new chipio() // eslint-disable-line
+});
+board.on('ready', () => {
+  // add auth
+  firebase.auth().signInWithEmailAndPassword(
+    keys.email, keys.password)
+  .then((user) => {
+    logger.debug(`${user.email} signed in`);
 
-  // init wakelight
-  const lillianWakeLight = new WakeLight();
-  const board = new five.Board({
-    io: new chipio() // eslint-disable-line
-  });
-  board.on('ready', () => {
+    // add value listener
+    alarmsRef.on('value', (data) => {
+      logger.debug('ref updated!');
+      lillianWakeLight.addAlarms(data.val().lillian);
+      lillianWakeLight.restart();
+    });
+
     // Create an LED on the XIO-P0 pin
     const led = new five.Led('XIO-P0');
+    this.repl.inject({
+      led,
+    });
     lillianWakeLight.addLED(led);
+  })
+  .catch((error) => {
+    logger.error(error.code, error.message);
   });
-
-  // add value listener
-  alarmsRef.on('value', (data) => {
-    logger.debug('ref updated!');
-    lillianWakeLight.addAlarms(data.val().lillian);
-    lillianWakeLight.restart();
-  });
-})
-.catch((error) => {
-  logger.error(error.code, error.message);
 });
