@@ -2,23 +2,15 @@ import moment from 'moment';
 import { logger } from './config';
 
 class WakeLight {
-
-  /**
-   * adds a Johnny Five led to the wakelight
-   * @method addLED
-   * @param [Object] led  a Johnny Five LED
-   * @see http://johnny-five.io/examples/led/
-   */
-  addLED(led) {
-    logger.debug('adding led');
-    this.led = led;
+  constructor() {
+    this.alarmActive = false;
   }
-
   /**
    * add or update wakelight alarms. calling this method
    * will restart the alarms timer and immediately check
    * if the alarms should be active
-   * @param {Object}  An object where each key contains an alarm
+   * @method  addAlarms
+   * @param   {Object}    An object where each key contains an alarm
    */
   addAlarms(alarms) {
     logger.debug('updating alarms');
@@ -26,34 +18,15 @@ class WakeLight {
   }
 
   /**
-   * Enable the alarm
+   * Check if the wakelight alarm should be active
+   * @method checkAlarms
+   * @param   {Function}  cb        a callback to call when the alarm state changes. The
+   *                                callback is passed the status of the alarmActive boolean and
+   *                                the time value that triggered the alarm
+   * @param   [Object]    timeRef   an optional time reference to check the alarm(s) against. If no
+   *                                value is provided the current system time is used.
    */
-  enableAlarm() {
-    logger.debug('Alarm enabled!');
-    this.alarmActive = true;
-    logger.debug(`LED? ${this.led}`);
-    if (this.led) {
-      this.led.on();
-    }
-  }
-
-  /**
-   * Disable the alarm
-   */
-  disableAlarm() {
-    logger.debug('Alarm disabled!');
-    this.alarmActive = false;
-    logger.debug(`LED? ${this.led}`);
-    if (this.led) {
-      this.led.off();
-    }
-  }
-
-  /**
-   * Check an array of alarms to see if any of them are alarmActive
-   * @param [Array] alarms an array of alarm objects
-   */
-  checkAlarms(time) {
+  checkAlarms(cb, time) {
     if (!this.alarms) {
       throw Error('alarms not set =/');
     }
@@ -77,37 +50,74 @@ class WakeLight {
         .minute(alarmMinute)
         .add(alarmDuration, 'minutes');
 
-      if (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) {
-        this.enableAlarm();
-      } else {
-        this.disableAlarm();
+      const alarmState = this.alarmActive;
+      this.alarmActive = (now.isAfter(alarmEnable) && now.isBefore(alarmDisable));
+      // only call the callback when the alarm state changes
+      if (alarmState) {
+        if (!this.alarmActive) {
+          cb(this.alarmActive, now.format('dddd hh:mm:ss a'));
+          return;
+        }
+      }
+      if (this.alarmActive) {
+        cb(this.alarmActive, now.format('dddd hh:mm:ss a'));
+        return;
       }
     });
   }
 
-  run() {
-    logger.silly('running wake light');
+  /**
+   * start the wakelight time poller
+   * @method run
+   * @param {Function}  cb   a callback to call when the alarm state changes. The
+   *                         callback is passed the status of the alarmActive boolean and
+   *                         the time value that triggered the alarm
+   */
+  run(cb) {
+    logger.debug('running wakelight');
     if (!this.alarms) {
       logger.error('alarms not set');
       return;
     }
-    this.checkAlarms();
+    this.checkAlarms(cb);
 
-    // set an interval to check the time and see if the alarm should be activated
+    /*
+     * set an interval to check the time and see if the alarm
+     * should be activated
+     */
     this.timer = setInterval(() => {
-      // get current time reference
-      this.checkAlarms();
+      this.checkAlarms(cb);
     }, 60000);
   }
 
-  stop() {
-    this.disableAlarm();
+  /**
+   * stop the wakelight time poller
+   * @method stop
+   * @param {Function} cb   a callback to call when the alarm state changes.. The
+   *                        callback is passed the status of the alarmActive boolean
+   */
+  stop(cb) {
+    this.alarmActive = false;
+    if (cb) {
+      cb(this.alarmActive);
+    }
     clearTimeout(this.timer);
+    this.timer = null;
   }
 
-  restart() {
-    this.stop();
-    this.run();
+  /**
+   * Restart the wakelight time poller
+   * @method restart
+   * @param {Function} startCallback   callback to call when the alarm state changes. The
+   *                                 callback is passed the status of the alarmActive boolean and
+   *                                 the time value that triggered the alarm
+   * @param [Function] stopCallback    callback to call when the wakelight stops running. The
+   *                                 callback is passed the status of the alarmActive boolean
+   */
+
+  restart(startCallback, stopCallback) {
+    this.stop(stopCallback);
+    this.run(startCallback);
   }
 }
 
