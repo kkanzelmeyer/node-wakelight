@@ -19,27 +19,27 @@ const board = new five.Board({
 });
 board.on('ready', () => {
   // connect to firebase with email/password auth
-  firebase.auth().signInWithEmailAndPassword(
-    keys.email, keys.password)
+  firebase.auth()
+  .signInWithEmailAndPassword(keys.email, keys.password)
   .then((user) => {
     logger.debug(`${user.email} signed in`);
 
-    // callback handler for the alarm status
+    // change handler for the alarm status
     const led = new five.Led('XIO-P0');
-    const handleAlarm = (alarmVal, time) => {
-      logger.debug(`${time} alarm active? ${alarmVal}`);
-      if (alarmVal) {
+    lillianWakeLight.on('change', (alarmState, time, name) => {
+      logger.debug(`${time} ${name} alarm active? ${alarmState}`);
+      if (alarmState) {
         led.on();
       } else {
         led.off();
       }
-    };
+    });
 
     // add firebase reference value listener
     alarmsRef.on('value', (data) => {
       logger.debug('ref updated!');
       lillianWakeLight.addAlarms(data.val().lillian);
-      lillianWakeLight.restart(handleAlarm);
+      lillianWakeLight.restart();
     });
   })
   .catch((error) => {

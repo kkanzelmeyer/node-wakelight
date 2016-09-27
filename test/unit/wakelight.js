@@ -17,17 +17,17 @@ const alarms = {
 test.beforeEach(t => {
   wakelight = new WakeLight();
   wakelight.addAlarms(alarms);
-  t.not(null, wakelight.alarms, 'alarms should not be null');
+  t.not(null, wakelight._alarms, 'alarms should not be null');
 });
 
 test('run wakelight', t => {
   wakelight.run();
-  t.not(null, wakelight.timer, 'if wakelight is running, the timer should not be null');
+  t.not(null, wakelight._timer, 'if wakelight is running, the timer should not be null');
 });
 
 test('stop wakelight', t => {
   wakelight.stop();
-  t.is(null, wakelight.timer, 'if wakelight is not running, the timer should be null');
+  t.is(null, wakelight._timer, 'if wakelight is not running, the timer should be null');
 });
 
 test('wakelight change handler', t => {
@@ -38,6 +38,7 @@ test('wakelight change handler', t => {
     t.true(state, 'alarm state should be active');
   };
   wakelight.on('change', changeHandler);
+
   // ensure the alarm is not active
   const testTime1 = moment()
     .hour(alarms.morning.hour)
