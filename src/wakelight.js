@@ -120,7 +120,6 @@ class WakeLight {
    * Restart the wakelight time poller
    * @method restart
    */
-
   restart() {
     this.stop();
     this.run();
