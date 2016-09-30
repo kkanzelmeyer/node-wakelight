@@ -18,22 +18,35 @@ const board = new five.Board({
   io: new chipio() // eslint-disable-line
 });
 board.on('ready', () => {
-  // add auth
-  firebase.auth().signInWithEmailAndPassword(
-    keys.email, keys.password)
+  // connect to firebase with email/password auth
+  firebase.auth()
+  .signInWithEmailAndPassword(keys.email, keys.password)
   .then((user) => {
     logger.debug(`${user.email} signed in`);
 
-    // add value listener
+    // change handler for the alarm status
+    const led = new five.Led('XIO-P0');
+    // led.blink(500);
+    // setTimeout(() => {
+    //   led.stop();
+    //   led.off();
+    // }, 5000);
+    lillianWakeLight.on('change', (alarmState, time, name) => {
+      if (alarmState) {
+        logger.debug(`alarm ${name} active! turning LED on`);
+        led.on();
+      } else {
+        logger.debug(`alarm ${name} active! turning LED off`);
+        led.off();
+      }
+    });
+
+    // add firebase reference value listener
     alarmsRef.on('value', (data) => {
       logger.debug('ref updated!');
       lillianWakeLight.addAlarms(data.val().lillian);
       lillianWakeLight.restart();
     });
-
-    // Create an LED on the XIO-P0 pin
-    const led = new five.Led('XIO-P0');
-    lillianWakeLight.addLED(led);
   })
   .catch((error) => {
     logger.error(error.code, error.message);

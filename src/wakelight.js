@@ -2,66 +2,65 @@ import moment from 'moment';
 import { logger } from './config';
 
 class WakeLight {
+  constructor() {
+    this._alarmActive = false;
+    this._changeObservers = [];
+  }
 
   /**
-   * adds a Johnny Five led to the wakelight
-   * @method addLED
-   * @param [Object] led  a Johnny Five LED
-   * @see http://johnny-five.io/examples/led/
+   * Event subscriber
+   * @method on
+   * @param {String}    event     the name of the event
+   * @param {Function}  handler   the event handler
    */
-  addLED(led) {
-    logger.debug('adding led');
-    this.led = led;
+  on(event, handler) {
+    switch (event) {
+      case 'change':
+        this._changeObservers.push(handler);
+        break;
+      default:
+        throw Error('event not available');
+    }
+  }
+
+  /**
+   * Change Event emitter
+   * @method handleChange
+   */
+  handleChange(...args) {
+    this._changeObservers.forEach(handler => {
+      handler(...args);
+    });
   }
 
   /**
    * add or update wakelight alarms. calling this method
-   * will restart the alarms timer and immediately check
+   * will restart the alarms _timer and immediately check
    * if the alarms should be active
-   * @param {Object}  An object where each key contains an alarm
+   * @method  addAlarms
+   * @param   {Object}    An object where each key contains an alarm
    */
   addAlarms(alarms) {
     logger.debug('updating alarms');
-    this.alarms = alarms;
+    this._alarms = alarms;
   }
 
   /**
-   * Enable the alarm
-   */
-  enableAlarm() {
-    logger.debug('Alarm enabled!');
-    this.alarmActive = true;
-    logger.debug(`LED? ${this.led}`);
-    if (this.led) {
-      this.led.on();
-    }
-  }
-
-  /**
-   * Disable the alarm
-   */
-  disableAlarm() {
-    logger.debug('Alarm disabled!');
-    this.alarmActive = false;
-    logger.debug(`LED? ${this.led}`);
-    if (this.led) {
-      this.led.off();
-    }
-  }
-
-  /**
-   * Check an array of alarms to see if any of them are alarmActive
-   * @param [Array] alarms an array of alarm objects
+   * Check if the wakelight alarm should be active
+   * @method checkAlarms
+   * @param   [Object]    timeRef   an optional time reference to check the alarm(s) against. If no
+   *                                value is provided the current system time is used.
    */
   checkAlarms(time) {
-    if (!this.alarms) {
+    if (!this._alarms) {
       throw Error('alarms not set =/');
     }
-    Object.keys(this.alarms).forEach(key => {
-      const alarm = this.alarms[key];
+    Object.keys(this._alarms).forEach(key => {
+      const alarm = this._alarms[key];
       const { hour: alarmHour,
         minute: alarmMinute,
-        duration: alarmDuration } = alarm;
+        duration: alarmDuration,
+        name: alarmName } = alarm;
 
       // get current time reference
       const now = time || moment();
@@ -77,34 +76,57 @@ class WakeLight {
         .minute(alarmMinute)
         .add(alarmDuration, 'minutes');
 
-      if (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) {
-        this.enableAlarm();
-      } else {
-        this.disableAlarm();
+      logger.debug('====================================');
+      logger.debug(`Alarm ${alarmName}`);
+      logger.debug('0 Alarm Active', this._alarmActive);
+      const prevState = Boolean(this._alarmActive);
+      logger.debug('1 Previous State', prevState);
+      const nextState = (now.isAfter(alarmEnable) && now.isBefore(alarmDisable));
+      logger.debug('2 Next State', nextState);
+      // only call the callback when the alarm state changes
+      if (prevState !== nextState) {
+        logger.debug('notifying change handlers');
+        this._alarmActive = Boolean(nextState);
+        this.handleChange(this._alarmActive, now.format('dddd hh:mm:ss a'), alarmName);
       }
     });
   }
 
+  /**
+   * start the wakelight time poller
+   * @method run
+   */
   run() {
-    logger.silly('running wake light');
-    if (!this.alarms) {
+    logger.debug('running wakelight');
+    if (!this._alarms) {
       logger.error('alarms not set');
       return;
     }
     this.checkAlarms();
 
-    // set an interval to check the time and see if the alarm should be activated
-    this.timer = setInterval(() => {
-      // get current time reference
+    /*
+     * set an interval to check the time and see if the alarm
+     * should be activated
+     */
+    this._timer = setInterval(() => {
       this.checkAlarms();
     }, 60000);
   }
 
+  /**
+   * stop the wakelight time poller
+   * @method stop
+   */
   stop() {
-    this.disableAlarm();
-    clearTimeout(this.timer);
+    this._alarmActive = false;
+    clearTimeout(this._timer);
+    this._timer = null;
   }
 
+  /**
+   * Restart the wakelight time poller
+   * @method restart
+   */
   restart() {
     this.stop();
     this.run();

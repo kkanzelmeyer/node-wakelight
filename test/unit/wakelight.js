@@ -1,8 +1,9 @@
 import test from 'ava';
 import moment from 'moment';
+import { logger } from '../../src/config';
 import WakeLight from '../../src/wakelight';
 
-const wakelight = new WakeLight();
+let wakelight = null;
 
 const alarms = {
   afternoon: {
@@ -13,35 +14,42 @@ const alarms = {
   },
 };
 
-test('add alarms', t => {
+test.beforeEach(t => {
+  wakelight = new WakeLight();
   wakelight.addAlarms(alarms);
-  t.true(wakelight.alarms != null, 'alarms should not be null');
+  t.not(null, wakelight._alarms, 'alarms should not be null');
 });
 
-test('enable alarm', t => {
-  wakelight.enableAlarm();
-  t.true(wakelight.alarmActive, 'alarm should be active');
+test('run wakelight', t => {
+  wakelight.run();
+  t.not(null, wakelight._timer, 'if wakelight is running, the timer should not be null');
 });
 
-test('disable alarm', t => {
-  wakelight.disableAlarm();
-  t.false(wakelight.alarmActive, 'alarm should be inactive');
+test('stop wakelight', t => {
+  wakelight.stop();
+  t.is(null, wakelight._timer, 'if wakelight is not running, the timer should be null');
 });
 
-test('check alarm inactive', t => {
-  const testTime = moment()
-    .hour(alarms.afternoon.hour)
-    .minute(alarms.afternoon.minute)
+test('wakelight change handler', t => {
+  t.plan(1);
+  // add change handler
+  const changeHandler = (state, time, name) => {
+    logger.debug(`State changed!, ${state} ${time} ${name}`);
+    t.true(state, 'alarm state should be active');
+  };
+  wakelight.on('change', changeHandler);
+
+  // ensure the alarm is not active
+  const testTime1 = moment()
+    .hour(alarms.morning.hour)
+    .minute(alarms.morning.minute)
     .subtract(5, 'minutes');
-  wakelight.checkAlarms(testTime);
-  t.false(wakelight.alarmActive, 'alarm should be inactive');
-});
+  wakelight.checkAlarms(testTime1);
 
-test('check alarm active', t => {
-  const testTime = moment()
-    .hour(alarms.afternoon.hour)
-    .minute(alarms.afternoon.minute)
+  // trigger an alarm change
+  const testTime2 = moment()
+    .hour(alarms.morning.hour)
+    .minute(alarms.morning.minute)
     .add(5, 'minutes');
-  wakelight.checkAlarms(testTime);
-  t.true(wakelight.alarmActive, 'alarm should be active');
+  wakelight.checkAlarms(testTime2);
 });
