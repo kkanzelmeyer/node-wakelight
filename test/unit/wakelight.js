@@ -11,12 +11,6 @@ const alarms = {
     minute: 40,
     name: 'afternoon',
   },
-  morning: {
-    duration: 60,
-    hour: 10,
-    minute: 15,
-    name: 'morning',
-  },
 };
 
 test('add alarms', t => {
@@ -36,8 +30,8 @@ test('disable alarm', t => {
 
 test('check alarm inactive', t => {
   const testTime = moment()
-    .hour(alarms.morning.hour)
-    .minute(alarms.morning.minute)
+    .hour(alarms.afternoon.hour)
+    .minute(alarms.afternoon.minute)
     .subtract(5, 'minutes');
   wakelight.checkAlarms(testTime);
   t.false(wakelight.alarmActive, 'alarm should be inactive');
@@ -45,8 +39,8 @@ test('check alarm inactive', t => {
 
 test('check alarm active', t => {
   const testTime = moment()
-    .hour(alarms.morning.hour)
-    .minute(alarms.morning.minute)
+    .hour(alarms.afternoon.hour)
+    .minute(alarms.afternoon.minute)
     .add(5, 'minutes');
   wakelight.checkAlarms(testTime);
   t.true(wakelight.alarmActive, 'alarm should be active');
