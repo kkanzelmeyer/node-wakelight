@@ -32,12 +32,11 @@ board.on('ready', () => {
     //   led.off();
     // }, 5000);
     lillianWakeLight.on('change', (alarmState, time, name) => {
-      logger.debug(`${time} ${name} alarm active? ${alarmState}`);
       if (alarmState) {
-        logger.debug('alarm active! turning LED on');
+        logger.debug(`alarm ${name} active! turning LED on`);
         led.on();
       } else {
-        logger.debug('alarm inactive! turning LED off');
+        logger.debug(`alarm ${name} active! turning LED off`);
         led.off();
       }
     });
