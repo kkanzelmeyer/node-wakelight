@@ -29,6 +29,7 @@ board.on('ready', () => {
     led.blink(500);
     setTimeout(() => {
       led.stop();
+      led.off();
     }, 5000);
     lillianWakeLight.on('change', (alarmState, time, name) => {
       logger.debug(`${time} ${name} alarm active? ${alarmState}`);
