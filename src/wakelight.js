@@ -76,8 +76,11 @@ class WakeLight {
         .minute(alarmMinute)
         .add(alarmDuration, 'minutes');
 
+      logger.debug('0 Alarm Active', this._alarmActive);
       const alarmState = Boolean(this._alarmActive);
+      logger.debug('1 Alarm State', alarmState);
       this._alarmActive = (now.isAfter(alarmEnable) && now.isBefore(alarmDisable));
+      logger.debug('2 Alarm Active', this._alarmActive);
       // only call the callback when the alarm state changes
       logger.debug(`Alarm ${alarmName} - Previous state: ${alarmState}. Current state: ${this._alarmActive}`);
       if (alarmState !== this._alarmActive) {
