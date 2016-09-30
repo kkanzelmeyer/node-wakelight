@@ -3,7 +3,6 @@ import { logger } from './config';
 
 class WakeLight {
   constructor() {
-    this._alarmActive = false;
     this._changeObservers = [];
   }
 
@@ -76,19 +75,8 @@ class WakeLight {
         .minute(alarmMinute)
         .add(alarmDuration, 'minutes');
 
-      logger.debug('====================================');
-      logger.debug(`Alarm ${alarmName}`);
-      logger.debug('0 Alarm Active', this._alarmActive);
-      const prevState = Boolean(this._alarmActive);
-      logger.debug('1 Previous State', prevState);
-      const nextState = (now.isAfter(alarmEnable) && now.isBefore(alarmDisable));
-      logger.debug('2 Next State', nextState);
-      // only call the callback when the alarm state changes
-      if (prevState !== nextState) {
-        logger.debug('notifying change handlers');
-        this._alarmActive = Boolean(nextState);
-        this.handleChange(this._alarmActive, now.format('dddd hh:mm:ss a'), alarmName);
-      }
+      const alarmState = (now.isAfter(alarmEnable) && now.isBefore(alarmDisable));
+      this.handleChange(alarmState, now.format('dddd hh:mm:ss a'), alarmName);
     });
   }
 
@@ -118,7 +106,6 @@ class WakeLight {
    * @method stop
    */
   stop() {
-    this._alarmActive = false;
     clearTimeout(this._timer);
     this._timer = null;
   }
