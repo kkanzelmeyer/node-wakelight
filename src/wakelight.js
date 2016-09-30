@@ -81,6 +81,7 @@ class WakeLight {
       // only call the callback when the alarm state changes
       logger.debug(`Alarm ${alarmName} - Previous state: ${alarmState}. Current state: ${this._alarmActive}`);
       if (alarmState ? !this._alarmActive : this._alarmActive) {
+        logger.debug('notifying change handlers');
         this.handleChange(this._alarmActive, now.format('dddd hh:mm:ss a'), alarmName);
       }
     });
