@@ -26,17 +26,12 @@ board.on('ready', () => {
 
     // change handler for the alarm status
     const led = new five.Led('XIO-P0');
-    // led.blink(500);
-    // setTimeout(() => {
-    //   led.stop();
-    //   led.off();
-    // }, 5000);
     lillianWakeLight.on('change', (alarmState, time, name) => {
       if (alarmState) {
         logger.debug(`alarm ${name} active! turning LED on`);
         led.on();
       } else {
-        logger.debug(`alarm ${name} active! turning LED off`);
+        logger.silly('no alarms active. LED remaining off');
         led.off();
       }
     });

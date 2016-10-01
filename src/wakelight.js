@@ -78,8 +78,8 @@ class WakeLight {
 
       return (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) === true;
     });
+
     if (activeAlarm) {
-      logger.debug(activeAlarm);
       this.handleChange(true, now.format('dddd hh:mm:ss a'), activeAlarm.name);
     } else {
       this.handleChange(false, null, null);
