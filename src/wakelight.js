@@ -1,4 +1,5 @@
 import moment from 'moment';
+import _ from 'lodash';
 import { logger } from './config';
 
 class WakeLight {
@@ -47,22 +48,22 @@ class WakeLight {
   /**
    * Check if the wakelight alarm should be active
    * @method checkAlarms
-   * @param   [Object]    timeRef   an optional time reference to check the alarm(s) against. If no
-   *                                value is provided the current system time is used.
+   * @param   [Object]    timeRef   optional momentjs time reference to check the alarm(s) against.
+   *                                If no value is provided the system time is used.
    */
   checkAlarms(time) {
     if (!this._alarms) {
       throw Error('alarms not set =/');
     }
-    Object.keys(this._alarms).forEach(key => {
-      const alarm = this._alarms[key];
+
+    // get current time reference
+    const now = time || moment();
+
+    // look for an active alarm
+    const activeAlarm = _.find(this._alarms, alarm => {
       const { hour: alarmHour,
         minute: alarmMinute,
-        duration: alarmDuration,
-        name: alarmName } = alarm;
-
-      // get current time reference
-      const now = time || moment();
+        duration: alarmDuration } = alarm;
 
       // create time reference for the alarm enable
       const alarmEnable = moment()
@@ -75,9 +76,14 @@ class WakeLight {
         .minute(alarmMinute)
         .add(alarmDuration, 'minutes');
 
-      const alarmState = (now.isAfter(alarmEnable) && now.isBefore(alarmDisable));
-      this.handleChange(alarmState, now.format('dddd hh:mm:ss a'), alarmName);
+      return (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) === true;
     });
+    if (activeAlarm) {
+      logger.debug(activeAlarm);
+      this.handleChange(true, now.format('dddd hh:mm:ss a'), activeAlarm.name);
+    } else {
+      this.handleChange(false, null, null);
+    }
   }
 
   /**
