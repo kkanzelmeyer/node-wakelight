@@ -10,7 +10,7 @@ import WakeLight from './wakelight';
 logger.debug('initializing firebase app');
 firebase.initializeApp(keys.config);
 
-const alarmsRef = firebase.database().ref('/alarms');
+const lillianRef = firebase.database().ref('/1a/');
 
 // init wakelight
 const lillianWakeLight = new WakeLight();
@@ -27,20 +27,20 @@ board.on('ready', () => {
     // change handler for the alarm status
     const led = new five.Led('XIO-P0');
     lillianWakeLight.on('change', (alarmState, time, name) => {
-      if (alarmState) {
-        logger.debug(`alarm ${name} active! turning LED on`);
-        led.on();
-      } else {
-        logger.silly('no alarms active. LED remaining off');
-        led.off();
-      }
+      logger.debug(`alarm ${name} active? ${alarmState}`);
+      lillianRef.update({ active: alarmState });
     });
 
     // add firebase reference value listener
-    alarmsRef.on('value', (data) => {
+    lillianRef.on('value', (data) => {
       logger.debug('ref updated!');
-      lillianWakeLight.addAlarms(data.val().lillian);
+      lillianWakeLight.addAlarms(data.val().alarms);
       lillianWakeLight.restart();
+      if (data.val().active) {
+        led.on();
+      } else {
+        led.off();
+      }
     });
   })
   .catch((error) => {

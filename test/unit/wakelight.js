@@ -5,14 +5,17 @@ import WakeLight from '../../src/wakelight';
 
 let wakelight = null;
 
-const alarms = {
-  afternoon: {
+const alarms = [
+  {
     duration: 60,
     hour: 23,
     minute: 40,
     name: 'afternoon',
+    id: 0,
   },
-};
+];
+
+const [testAlarm] = alarms;
 
 test.beforeEach(t => {
   wakelight = new WakeLight();
@@ -41,15 +44,8 @@ test('wakelight change handler', t => {
 
   // ensure the alarm is not active
   const testTime1 = moment()
-    .hour(alarms.morning.hour)
-    .minute(alarms.morning.minute)
-    .subtract(5, 'minutes');
-  wakelight.checkAlarms(testTime1);
-
-  // trigger an alarm change
-  const testTime2 = moment()
-    .hour(alarms.morning.hour)
-    .minute(alarms.morning.minute)
+    .hour(testAlarm.hour)
+    .minute(testAlarm.minute)
     .add(5, 'minutes');
-  wakelight.checkAlarms(testTime2);
+  wakelight.checkAlarms(testTime1);
 });
