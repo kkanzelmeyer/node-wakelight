@@ -11,6 +11,8 @@ logger.debug('initializing firebase app');
 firebase.initializeApp(keys.config);
 
 const lillianRef = firebase.database().ref('/1a/');
+const lillianAlarmRef = lillianRef.child('alarms');
+const lillianActiveRef = lillianRef.chlid('active');
 
 // init wakelight
 const lillianWakeLight = new WakeLight();
@@ -29,15 +31,23 @@ board.on('ready', () => {
 
     // alarm light change listener
     lillianWakeLight.on('change', (alarmState) => {
+      logger.debug('===================================');
+      logger.debug('wakelight change handler');
       lillianRef.update({ active: alarmState });
+      logger.debug('===================================');
     });
 
-    // add firebase reference value listener
-    lillianRef.on('value', (data) => {
-      logger.debug(`alarm active? ${data.val().active}`);
+    // add firebase alarm reference value listener
+    lillianAlarmRef.on('value', (data) => {
+      logger.debug('===================================');
+      logger.debug('alarm change handler');
       lillianWakeLight.addAlarms(data.val().alarms);
       lillianWakeLight.restart();
-      if (data.val().active) {
+    });
+
+    // add alarm status value listener
+    lillianActiveRef.on('value', data => {
+      if (data.val().active === true) {
         logger.debug('led on');
         led.on();
       } else {
