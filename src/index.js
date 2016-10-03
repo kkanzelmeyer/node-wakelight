@@ -34,6 +34,7 @@ board.on('ready', () => {
     // add firebase reference value listener
     lillianRef.on('value', (data) => {
       logger.debug('ref updated!');
+      logger.debug(data.val());
       lillianWakeLight.addAlarms(data.val().alarms);
       lillianWakeLight.restart();
       if (data.val().active) {
