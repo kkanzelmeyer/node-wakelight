@@ -34,7 +34,7 @@ board.on('ready', () => {
       logger.debug('===================================');
       logger.debug('wakelight change handler');
       lillianRef.update({ active: alarmState });
-      logger.debug('===================================');
+      logger.debug('\n');
     });
 
     // add firebase alarm reference value listener
@@ -44,6 +44,7 @@ board.on('ready', () => {
       logger.debug(data.val());
       lillianWakeLight.addAlarms(data.val());
       lillianWakeLight.restart();
+      logger.debug('\n');
     });
 
     // add alarm status value listener
@@ -51,13 +52,14 @@ board.on('ready', () => {
       logger.debug('===================================');
       logger.debug('active change handler');
       logger.debug(data.val());
-      if (data.val().active === true) {
+      if (data.val() === true) {
         logger.debug('led on');
         led.on();
       } else {
         logger.debug('led off');
         led.stop().off();
       }
+      logger.debug('\n');
     });
   })
   .catch((error) => {
