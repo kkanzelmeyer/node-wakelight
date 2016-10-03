@@ -26,15 +26,11 @@ board.on('ready', () => {
 
     // change handler for the alarm status
     const led = new five.Led('XIO-P0');
-    lillianWakeLight.on('change', (alarmState, time, name) => {
-      logger.debug(`alarm ${name} active? ${alarmState}`);
-      lillianRef.update({ active: alarmState });
-    });
 
     // add firebase reference value listener
     lillianRef.on('value', (data) => {
       logger.debug('ref updated!');
-      logger.debug(data.val());
+      logger.debug(`alarm active? ${data.val().active}`);
       lillianWakeLight.addAlarms(data.val().alarms);
       lillianWakeLight.restart();
       if (data.val().active) {
@@ -42,6 +38,12 @@ board.on('ready', () => {
       } else {
         led.off();
       }
+    });
+
+    // alarm light change listener
+    lillianWakeLight.on('change', (alarmState, time, name) => {
+      logger.debug(`alarm ${name} active? ${alarmState}`);
+      lillianRef.update({ active: alarmState });
     });
   })
   .catch((error) => {
