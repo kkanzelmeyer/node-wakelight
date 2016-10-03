@@ -29,20 +29,19 @@ board.on('ready', () => {
 
     // add firebase reference value listener
     lillianRef.on('value', (data) => {
-      logger.debug('ref updated!');
       logger.debug(`alarm active? ${data.val().active}`);
       lillianWakeLight.addAlarms(data.val().alarms);
-      lillianWakeLight.restart();
       if (data.val().active) {
+        logger.debug('led on');
         led.on();
       } else {
-        led.off();
+        logger.debug('led off');
+        led.stop().off();
       }
     });
 
     // alarm light change listener
-    lillianWakeLight.on('change', (alarmState, time, name) => {
-      logger.debug(`alarm ${name} active? ${alarmState}`);
+    lillianWakeLight.on('change', (alarmState) => {
       lillianRef.update({ active: alarmState });
     });
   })
