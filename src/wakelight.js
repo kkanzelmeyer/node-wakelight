@@ -60,15 +60,23 @@ class WakeLight {
     const now = time || moment();
 
     // look for an active alarm
-    const activeAlarm = _.find(this._alarms, alarm => {
+    const enableAlarm = _.find(this._alarms, alarm => {
       const { hour: alarmHour,
-        minute: alarmMinute,
-        duration: alarmDuration } = alarm;
+        minute: alarmMinute } = alarm;
 
       // create time reference for the alarm enable
       const alarmEnable = moment()
         .hour(alarmHour)
         .minute(alarmMinute);
+
+      return now.isSame(alarmEnable, 'minute');
+    });
+
+    // look for an active alarm
+    const disableAlarm = _.find(this._alarms, alarm => {
+      const { hour: alarmHour,
+        minute: alarmMinute,
+        duration: alarmDuration } = alarm;
 
       // create time reference for the alarm disable
       const alarmDisable = moment()
@@ -76,13 +84,15 @@ class WakeLight {
         .minute(alarmMinute)
         .add(alarmDuration, 'minutes');
 
-      return (now.isAfter(alarmEnable) && now.isBefore(alarmDisable)) === true;
+      return now.isSame(alarmDisable, 'minute');
     });
 
-    if (activeAlarm) {
-      this.handleChange(true, now.format('dddd hh:mm:ss a'), activeAlarm.name);
-    } else {
-      this.handleChange(false, null, null);
+    if (enableAlarm) {
+      this.handleChange(true, now.format('dddd hh:mm:ss a'), enableAlarm.name);
+    }
+
+    if (disableAlarm) {
+      this.handleChange(false, now.format('dddd hh:mm:ss a'), disableAlarm.name);
     }
   }
 
