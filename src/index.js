@@ -10,11 +10,9 @@ import WakeLight from './wakelight';
 logger.debug('initializing firebase app');
 firebase.initializeApp(keys.config);
 
-const refPath = '/wakelight/';
-const subpath = (path) => `${refPath}${path}`;
-const lillianRef = firebase.database().ref(subpath('1a/'));
-const lillianAlarmRef = firebase.database().ref(subpath('1a/alarms/'));
-const lillianActiveRef = firebase.database().ref(subpath('1a/active/'));
+const lillianRef = firebase.database().ref('/wakelight/1a/');
+const lillianAlarmRef = firebase.database().ref('/wakelight/1a/alarms/');
+const lillianActiveRef = firebase.database().ref('/wakelight/1a/active/');
 
 // init wakelight
 const lillianWakeLight = new WakeLight();
