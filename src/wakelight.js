@@ -72,6 +72,8 @@ class WakeLight {
 
     // get current time reference
     const now = time || moment();
+    logger.debug('time is');
+    logger.debug(now);
 
     // look for an active alarm
     const enableAlarm = _.find(this._alarms, alarm => {
