@@ -11,9 +11,6 @@ module.exports = {
       name: 'Wakelight',
       script: 'dist/index.js',
       interpreter: './node_modules/.bin/babel-node',
-      env: {
-        TZ: 3030,
-      },
       env_production: {
         NODE_ENV: 'production',
       },
