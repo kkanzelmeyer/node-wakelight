@@ -2,7 +2,7 @@ import firebase from 'firebase';
 /* eslint-disable import/no-unresolved */
 import five from 'johnny-five';
 import chipio from 'chip-io';
-import * as keys from '/home/kevin/wakelightKeys.js';
+import keys from '/home/kevin/wakelightKeys.json';
 /* eslint-enable */
 import { logger } from './config';
 import WakeLight from './wakelight';
