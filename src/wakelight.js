@@ -70,10 +70,11 @@ class WakeLight {
       throw Error('alarms not set =/');
     }
 
+    const format = 'dddd, MMMM Do YYYY, h:mm:ss a';
+
     // get current time reference
     const now = time || moment();
-    logger.debug('time is');
-    logger.debug(now);
+    logger.debug(`Time is ${now.format(format)}`);
 
     // look for an active alarm
     const enableAlarm = _.find(this._alarms, alarm => {
