@@ -8,7 +8,7 @@ module.exports = {
 
     // First application
     {
-      name: 'Wakelight',
+      name: 'Lillian Wakelight',
       script: 'dist/index.js',
       interpreter: './node_modules/.bin/babel-node',
       env_production: {
