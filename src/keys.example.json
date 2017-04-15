@@ -1,0 +1,11 @@
+{
+  "email": "your.firebase.email@domain.com",
+  "password": "yourFirebasePassword",
+  "config": {
+    "apiKey": "",
+    "authDomain": "",
+    "databaseURL": "",
+    "storageBucket": "",
+    "messagingSenderId": "''",
+    }
+}
