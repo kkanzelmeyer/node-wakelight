@@ -2,9 +2,9 @@ import firebase from 'firebase';
 /* eslint-disable import/no-unresolved */
 import five from 'johnny-five';
 import chipio from 'chip-io';
+import * as keys from '/home/kevin/wakelightKeys.js';
 /* eslint-enable */
 import { logger } from './config';
-import * as keys from './keys';
 import WakeLight from './wakelight';
 
 logger.debug('initializing firebase app');
