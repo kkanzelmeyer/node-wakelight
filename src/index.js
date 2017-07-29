@@ -31,6 +31,7 @@ board.on('ready', () => {
 
     // change handler for the alarm status
     const led = new five.Led('XIO-P0');
+    logger.debug('added led');
 
     // alarm light change listener
     lillianWakeLight.on('change', (alarmState) => {
@@ -63,6 +64,7 @@ board.on('ready', () => {
     });
   })
   .catch((error) => {
+    logger.error(error);
     logger.error(error.code, error.message);
   });
 });
