@@ -2,6 +2,8 @@ import moment from 'moment';
 import _ from 'lodash';
 import { logger } from './config';
 
+const format = 'dddd, MMMM Do YYYY, h:mm:ss a';
+
 class WakeLight {
   constructor() {
     this._changeObservers = [];
@@ -55,7 +57,7 @@ class WakeLight {
    * @param   {Object}    An object where each key contains an alarm
    */
   addAlarms(alarms) {
-    logger.debug('updating alarms');
+    logger.debug(`received alarms ${alarms}`);
     this._alarms = alarms;
   }
 
@@ -72,6 +74,7 @@ class WakeLight {
 
     // get current time reference
     const now = time || moment();
+    logger.silly(`Time is ${now.format(format)}`);
 
     // look for an active alarm
     const enableAlarm = _.find(this._alarms, alarm => {

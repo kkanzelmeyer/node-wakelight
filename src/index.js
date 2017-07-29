@@ -2,17 +2,20 @@ import firebase from 'firebase';
 /* eslint-disable import/no-unresolved */
 import five from 'johnny-five';
 import chipio from 'chip-io';
+import keys from '/home/kevin/wakelightKeys.json';
 /* eslint-enable */
 import { logger } from './config';
-import * as keys from './keys';
 import WakeLight from './wakelight';
 
 logger.debug('initializing firebase app');
 firebase.initializeApp(keys.config);
 
-const lillianRef = firebase.database().ref('/wakelight/1a/');
-const lillianAlarmRef = firebase.database().ref('/wakelight/1a/alarms/');
-const lillianActiveRef = firebase.database().ref('/wakelight/1a/active/');
+const wakelightRef = firebase.database().ref('wakelight/1a');
+const alarmRef = firebase.database().ref('wakelight/1a/alarms');
+const activeRef = firebase.database().ref('wakelight/1a/active');
+logger.debug(`wakelight ref - ${wakelightRef.key}`);
+logger.debug(`alarm ref - ${alarmRef.key}`);
+logger.debug(`active ref - ${activeRef.key}`);
 
 // init wakelight
 const lillianWakeLight = new WakeLight();
@@ -33,11 +36,11 @@ board.on('ready', () => {
     lillianWakeLight.on('change', (alarmState) => {
       logger.debug('===================================');
       logger.debug('wakelight change handler');
-      lillianRef.update({ active: alarmState });
+      wakelightRef.update({ active: alarmState });
     });
 
     // add firebase alarm reference value listener
-    lillianAlarmRef.on('value', (data) => {
+    alarmRef.on('value', (data) => {
       logger.debug('===================================');
       logger.debug('alarm change handler');
       logger.debug(data.val());
@@ -46,7 +49,7 @@ board.on('ready', () => {
     });
 
     // add alarm status value listener
-    lillianActiveRef.on('value', data => {
+    activeRef.on('value', data => {
       logger.debug('===================================');
       logger.debug('active change handler');
       logger.debug(data.val());
