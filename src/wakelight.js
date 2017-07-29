@@ -5,6 +5,20 @@ import { logger } from './config';
 class WakeLight {
   constructor() {
     this._changeObservers = [];
+    // default alarms - 7am and 3pm
+    this._alarms = [{
+      duration: 60,
+      hour: 7,
+      id: 0,
+      minute: 0,
+      name: 'morning',
+    }, {
+      duration: 60,
+      hour: 15,
+      id: 1,
+      minute: 15,
+      name: 'afternoon',
+    }];
   }
 
   /**
